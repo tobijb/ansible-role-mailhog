@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/geerlingguy/ansible-role-mailhog.svg?branch=master)](https://travis-ci.org/geerlingguy/ansible-role-mailhog)
 
-Installs [MailHog](https://github.com/ian-kent/Go-MailHog), a Go-based SMTP server and web UI/API for displaying captured emails, on RedHat or Debian-based linux systems. Also installs sSMTP so you can easily redirect local email to the SMTP server.
+Installs [MailHog](https://github.com/mailhog/MailHog), a Go-based SMTP server and web UI/API for displaying captured emails, on RedHat or Debian-based linux systems.
 
-Also installs sSMTP so you can redirect system mail to MailHog's built-in SMTP server.
+Also installs [mhsendmail](https://github.com/mailhog/mhsendmail) so you can redirect system mail to MailHog's built-in SMTP server.
 
 If you're using PHP and would like to route all PHP email into MailHog, you will need to update the `sendmail_path` configuration option in php.ini, like so:
 
-    sendmail_path = "/usr/sbin/ssmtp -t"
+    sendmail_path = "{{ mailhog_install_dir }}/mhsendmail"
+
+(Replace `{{ mailhog_install_dir }}` with the actual MailHog installation directory, which is `/opt/mailhog` by default—e.g. `/opt/mailhog/mhsendmail`).
 
 ## Requirements
 
@@ -18,21 +20,17 @@ None.
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-    mailhog_binary_url: https://github.com/mailhog/MailHog/releases/download/v0.1.6/MailHog_linux_amd64
-
-The MailHog binary that will be installed. You can find the latest version or a 32-bit version by visiting the Go-MailHog GitHub project releases page.
-
     mailhog_install_dir: /opt/mailhog
 
 The directory into which the MailHog binary will be installed.
 
-    ssmtp_mailhub: localhost:1025
-    ssmtp_root: postmaster
-    ssmtp_authuser: ""
-    ssmtp_authpass: ""
-    ssmtp_from_line_override: "YES"
+    mailhog_binary_url: https://github.com/mailhog/MailHog/releases/download/v0.1.6/MailHog_linux_amd64
 
-sSMTP options. These should work with MailHog's default configuration.
+The MailHog binary that will be installed. You can find the latest version or a 32-bit version by visiting the [MailHog project releases page](https://github.com/mailhog/MailHog/releases).
+
+    mhsendmail_binary_url: https://github.com/mailhog/mhsendmail/releases/download/v0.1.8/mhsendmail_linux_amd64
+
+The mhsendmail binary that will be installed. You can find the latest version or a 32-bit version by visiting the [mhsendmail project releases page](https://github.com/mailhog/mhsendmail/releases).
 
 ## Dependencies
 
@@ -43,10 +41,6 @@ sSMTP options. These should work with MailHog's default configuration.
     - hosts: servers
       roles:
         - { role: geerlingguy.mailhog }
-
-## TODO
-
-  - Add more runtime config (through init script/env vars) for MailHog (e.g. port, host, etc.).
 
 ## License
 
